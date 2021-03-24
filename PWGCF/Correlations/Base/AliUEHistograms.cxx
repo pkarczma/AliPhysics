@@ -969,7 +969,7 @@ void AliUEHistograms::FillCorrelations(Double_t centrality, Float_t zVtx, AliUEH
 	  }
 	}
         
-        Double_t vars[6];
+        Double_t vars[8];
         vars[0] = triggerEta - eta[j];
         vars[1] = particle->Pt();
         vars[2] = triggerParticle->Pt();
@@ -980,6 +980,8 @@ void AliUEHistograms::FillCorrelations(Double_t centrality, Float_t zVtx, AliUEH
         if (vars[4] < -0.5 * TMath::Pi())
           vars[4] += TMath::TwoPi();
 	vars[5] = zVtx;
+        vars[6] = particle->Phi();
+        vars[7] = triggerParticle->Phi();
 	
 	if (fillpT)
 	  weight = particle->Pt();
@@ -989,13 +991,14 @@ void AliUEHistograms::FillCorrelations(Double_t centrality, Float_t zVtx, AliUEH
 	{
 	  if (fEfficiencyCorrectionAssociated)
 	  {
-	    Int_t effVars[4];
+	    Int_t effVars[5];
 	    // associated particle
 	    effVars[0] = fEfficiencyCorrectionAssociated->GetAxis(0)->FindBin(eta[j]);
 	    effVars[1] = fEfficiencyCorrectionAssociated->GetAxis(1)->FindBin(vars[1]); //pt
 	    effVars[2] = fEfficiencyCorrectionAssociated->GetAxis(2)->FindBin(vars[3]); //centrality
 	    effVars[3] = fEfficiencyCorrectionAssociated->GetAxis(3)->FindBin(vars[5]); //zVtx
-	    
+	    effVars[4] = fEfficiencyCorrectionAssociated->GetAxis(4)->FindBin(vars[6]); //phi
+
 	    // 	  Printf("%d %d %d %d %f", effVars[0], effVars[1], effVars[2], effVars[3], fEfficiencyCorrectionAssociated->GetBinContent(effVars));
 	  
 	    useWeight *= fEfficiencyCorrectionAssociated->GetBinContent(effVars);
@@ -1008,6 +1011,7 @@ void AliUEHistograms::FillCorrelations(Double_t centrality, Float_t zVtx, AliUEH
 	    effVars[1] = fEfficiencyCorrectionTriggers->GetAxis(1)->FindBin(vars[2]); //pt
 	    effVars[2] = fEfficiencyCorrectionTriggers->GetAxis(2)->FindBin(vars[3]); //centrality
 	    effVars[3] = fEfficiencyCorrectionTriggers->GetAxis(3)->FindBin(vars[5]); //zVtx
+	    effVars[4] = fEfficiencyCorrectionTriggers->GetAxis(4)->FindBin(vars[7]); //phi
 	    useWeight *= fEfficiencyCorrectionTriggers->GetBinContent(effVars);
 	  }
 	}
@@ -1028,10 +1032,11 @@ void AliUEHistograms::FillCorrelations(Double_t centrality, Float_t zVtx, AliUEH
       if (firstTime)
       {
         // once per trigger particle
-        Double_t vars[3];
+        Double_t vars[4];
         vars[0] = triggerParticle->Pt();
         vars[1] = centrality;
 	vars[2] = zVtx;
+        vars[3] = triggerParticle->Phi();
 
 	Double_t useWeight = 1;
 	if (fEfficiencyCorrectionTriggers && applyEfficiency)
@@ -1043,6 +1048,7 @@ void AliUEHistograms::FillCorrelations(Double_t centrality, Float_t zVtx, AliUEH
 	  effVars[1] = fEfficiencyCorrectionTriggers->GetAxis(1)->FindBin(vars[0]); //pt
 	  effVars[2] = fEfficiencyCorrectionTriggers->GetAxis(2)->FindBin(vars[1]); //centrality
 	  effVars[3] = fEfficiencyCorrectionTriggers->GetAxis(3)->FindBin(vars[2]); //zVtx
+	  effVars[4] = fEfficiencyCorrectionTriggers->GetAxis(4)->FindBin(vars[3]); //phi
 	  useWeight *= fEfficiencyCorrectionTriggers->GetBinContent(effVars);
 	}
 
@@ -1115,12 +1121,13 @@ void AliUEHistograms::FillTrackingEfficiency(TObjArray* mc, TObjArray* recoPrim,
     for (Int_t i=0; i<list->GetEntriesFast(); i++)
     {
       AliVParticle* particle = (AliVParticle*) list->UncheckedAt(i);
-      Double_t vars[5];
+      Double_t vars[6];
       vars[0] = particle->Eta();
       vars[1] = particle->Pt();
       vars[2] = particleType;
       vars[3] = centrality;
       vars[4] = zVtx;
+      vars[5] = particle->Phi();
       
       for (Int_t j=0; j<fgkUEHists; j++)
         if (GetUEHist(j))

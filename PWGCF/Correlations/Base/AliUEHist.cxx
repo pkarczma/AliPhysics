@@ -117,7 +117,12 @@ AliUEHist::AliUEHist(const char* reqHist, const char* binning) :
   // pT,lead binning 2
   Int_t nLeadingpTBins2 = -1;
   Double_t* leadingpTBins2 = GetBinning(binning, "p_t_leading_course", nLeadingpTBins2);
-  
+
+  // phi
+  Int_t nPhiBins = -1;
+  Double_t* phiBins = GetBinning(binning, "phi", nPhiBins);
+  const char* phiTitle = "#varphi";
+
   // phi,lead
   Int_t nLeadingPhiBins = -1;
   Double_t* leadingPhiBins = GetBinning(binning, "delta_phi", nLeadingPhiBins);
@@ -324,8 +329,9 @@ AliUEHist::AliUEHist(const char* reqHist, const char* binning) :
   iTrackBin[1] = npTBinsFine;
   iTrackBin[2] = kNSpeciesBins;
   iTrackBin[4] = nVertexBinsEff;
+  iTrackBin[5] = nPhiBins;
 
-  fTrackHistEfficiency = new AliCFContainer("fTrackHistEfficiency", "Tracking efficiency", 6, 5, iTrackBin);
+  fTrackHistEfficiency = new AliCFContainer("fTrackHistEfficiency", "Tracking efficiency", 7, 6, iTrackBin);
   fTrackHistEfficiency->SetBinLimits(0, etaBins);
   fTrackHistEfficiency->SetVarTitle(0, etaTitle);
   fTrackHistEfficiency->SetBinLimits(1, pTBinsFine);
@@ -336,6 +342,8 @@ AliUEHist::AliUEHist(const char* reqHist, const char* binning) :
   fTrackHistEfficiency->SetVarTitle(3, trackAxisTitle[3]);
   fTrackHistEfficiency->SetBinLimits(4, vertexBinsEff);
   fTrackHistEfficiency->SetVarTitle(4, vertexTitle);
+  fTrackHistEfficiency->SetBinLimits(5, phiBins);
+  fTrackHistEfficiency->SetVarTitle(5, phiTitle);
 
   fFakePt = new TH3F("fFakePt","fFakePt;p_{T,rec};p_{T};centrality", 200, 0, 20, 200, 0, 20, 20, 0, 100);
   
@@ -346,6 +354,7 @@ AliUEHist::AliUEHist(const char* reqHist, const char* binning) :
   delete[] leadingPhiBins;
   delete[] vertexBins;
   delete[] vertexBinsEff;
+  delete[] phiBins;
 }
   
 TString AliUEHist::CombineBinning(TString defaultBinning, TString customBinning) 
